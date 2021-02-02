@@ -13,6 +13,7 @@ const collectsBasePath = "collects"
 type CollectService interface {
 	List(interface{}) ([]Collect, error)
 	Count(interface{}) (int, error)
+	Create(Collect) (*Collect, error)
 }
 
 // CollectServiceOp handles communication with the collect related methods of
@@ -55,4 +56,13 @@ func (s *CollectServiceOp) List(options interface{}) ([]Collect, error) {
 func (s *CollectServiceOp) Count(options interface{}) (int, error) {
 	path := fmt.Sprintf("%s/count.json", collectsBasePath)
 	return s.client.Count(path, options)
+}
+
+// Create a new custom colley
+func (s *CollectServiceOp) Create(collect Collect) (*Collect, error) {
+	path := fmt.Sprintf("%s.json", collectsBasePath)
+	wrappedData := CollectResource{Collect: &collect}
+	resource := new(CollectResource)
+	err := s.client.Post(path, wrappedData, resource)
+	return resource.Collect, err
 }
